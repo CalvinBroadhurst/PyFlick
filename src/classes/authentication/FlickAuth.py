@@ -4,9 +4,9 @@ Authentication Module
 #!/usr/bin/env python
 # encoding: utf-8
 
-import json
-import time
-import requests
+import ujson as json
+import utime as time
+import urequests as requests
 import os
 from definitions import AUTH_FILE_PATH
 from classes.exception_handler.custom import AuthException

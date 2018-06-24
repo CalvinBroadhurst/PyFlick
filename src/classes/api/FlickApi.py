@@ -4,10 +4,10 @@ API Interface Module
 #!/usr/bin/env python
 # encoding: utf-8
 
-import json
-import time
-from calendar import timegm
-import requests
+import ujson as json
+import utime
+#from calendar import timegm
+import urequests as requests
 from classes.authentication.FlickAuth import FlickAuth
 from classes.util.util import Util
 from definitions import FLICK_PRICE_ENDPOINT, FLICK_DATA_STORE
@@ -21,11 +21,11 @@ class FlickApi(object):
         AuthInstance = FlickAuth(username, password, client_id, client_secret)
         self.session = AuthInstance.getToken()
         self.getRawData()
-    
+
     def __update(self, writeToFile=False):
         """ Pull Updates From Flick Servers"""
 
-        print "getting the latest price"
+        print("getting the latest price")
         headers = {
           "Authorization": "Bearer %s" % self.session["id_token"]
         }
@@ -39,20 +39,21 @@ class FlickApi(object):
         # A 200OK response will contain the JSON payload.
         # TODO: Create Exception Handler to catch failed json.load.
         response = json.loads(req.text)
-        if writeToFile is True:
-          util.saveJSONFile(FLICK_DATA_STORE, response)
+#        if writeToFile is True:
+#          util.saveJSONFile(FLICK_DATA_STORE, response)
         self.data = response
         return response
 
-    def __priceExpired(self):
-      """ Checks if spot price has expired """
-      nowEpoch = int(time.time())
-      nextEpoch = self.getNextUpdateTime(True)
-      print "%d" % nextEpoch
-      print "%d" % nowEpoch
-      if(nextEpoch < nowEpoch):
-        return True
-      return False
+## In order to avoid EPOCH stuff, lets assume it is always expired
+#    def __priceExpired(self):
+#      """ Checks if spot price has expired """
+#      nowEpoch = int(time.time())
+#      nextEpoch = self.getNextUpdateTime(True)
+#      print("%d" % nextEpoch)
+#      print("%d" % nowEpoch)
+#      if(nextEpoch < nowEpoch):
+#        return True
+#      return False
 
     def __getUpdateTime(self, update, isEpoch):
         """ Gets the prev/next update time """
@@ -65,19 +66,21 @@ class FlickApi(object):
 
     def getRawData(self, writeToFile=False):
         """ Public method to get pricing data """
-        pricing = util.getJSONFile(FLICK_DATA_STORE)
+#        pricing = util.getJSONFile(FLICK_DATA_STORE)
+        pricing = False
         if not pricing:
           pricing = self.__update(writeToFile)
         self.data = pricing
-        expired = self.__priceExpired()
-        if expired is True:
-          self.__update(True)
+#        expired = self.__priceExpired()
+#        expired = True
+#        if expired is True:
+#          self.__update(True)
         return self.data
 
     def getPricePerKwh(self):
         """ Get's the pure price per kwh as a number"""
         return self.data["needle"]["price"]
-    
+
     def getPriceBreakdown(self):
         """ Get the price, broken down into it's constituent parts"""
         charges = 0.0
@@ -87,17 +90,18 @@ class FlickApi(object):
             charges += float(item["value"])
           elif item["charge_method"] == "spot_price":
             spotPrice = float(item["value"])
-        
+
         response = {};
         response["charges"] = charges
         response["spotPrice"] = spotPrice
         return response
 
-    def getLastUpdateTime(self, isEpoch=False):
-      update = self.data["needle"]["start_at"]
-      return self.__getUpdateTime(update, isEpoch)
-     
+## Only used to print the time in EPOCHs in main
+#    def getLastUpdateTime(self, isEpoch=False):
+#      update = self.data["needle"]["start_at"]
+#      return self.__getUpdateTime(update, isEpoch)
 
-    def getNextUpdateTime(self, isEpoch=False):
-      update = self.data["needle"]["end_at"]
-      return self.__getUpdateTime(update, isEpoch)
+
+#    def getNextUpdateTime(self, isEpoch=False):
+#      update = self.data["needle"]["end_at"]
+#      return self.__getUpdateTime(update, isEpoch)
