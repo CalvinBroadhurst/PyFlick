@@ -18,7 +18,8 @@ You can use the client id/secret below, or find your own by sniffing the request
   "client_id": "le37iwi3qctbduh39fvnpevt1m2uuvz",
   "client_secret": "ignwy9ztnst3azswww66y9vd9zt6qnt",
   "username": "email@example.com",
-  "password": "SuperSecretPassword"
+  "password": "SuperSecretPassword",
+  "sleep_time": 300
 }
 ```
 

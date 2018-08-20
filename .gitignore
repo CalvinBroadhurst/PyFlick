@@ -5,3 +5,4 @@ pyFlick/
 dist/
 build/
 *.pyc
+/src/main.py

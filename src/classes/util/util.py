@@ -23,6 +23,11 @@ class Util(object):
         """ Get Data from cached file """
 #        if not os.path.exists(filepath):
 #            return False
+        print("getJSONFile")
+        try:
+            os.listdir().index(filepath)
+        except:
+            return False
         with open(filepath) as stream:
             data = {}
             try:
